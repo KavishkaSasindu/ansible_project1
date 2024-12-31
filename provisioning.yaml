@@ -1,0 +1,42 @@
+---
+- name: Provisioning a server
+  hosts: webservers
+  tasks:
+    - name: Print the os name
+      debug:
+        var: ansible_distribution
+
+    - name: Install NTP on the CentOS
+      ansible.builtin.dnf:
+        name: chrony
+        state: present
+      when: ansible_distribution == 'CentOS'
+      register: resultServiceCent
+      
+    - name: Print service status
+      debug:
+        var: resultServiceCent
+
+    - name: Install ntp on Ubuntu
+      ansible.builtin.apt:
+        name: ntp
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Ubuntu'
+      register: resultService
+
+    - name: Start ntp service on CentOS
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+        enabled: yes
+      register: resultCentOS
+      when: ( ansible_distribution == 'CentOS' and resultServiceCent.changed )
+
+    - name: Start ntp service on Ubuntu
+      ansible.builtin.service:
+        name: ntp
+        state: started
+        enabled: yes
+      register: resultUbuntu
+      when: ( ansible_distribution == 'Ubuntu' and resultService.changed )

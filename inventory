@@ -1,0 +1,23 @@
+all:
+  hosts:
+    web00:
+      ansible_host: 172.31.87.143
+    web01:
+      ansible_host: 172.31.94.238
+    web02:
+      ansible_host: 172.31.93.222
+    web03:
+      ansible_host: 172.31.93.12
+      ansible_user: ubuntu
+
+  children:
+    webservers:
+      hosts:
+        web00:
+        web01:
+        web02:
+        web03:
+
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: web_key.pem
